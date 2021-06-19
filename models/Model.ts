@@ -1,9 +1,10 @@
 import { ObjectID, ObjectId } from "bson"
-import { noSql } from "../config/database"
+import { noSql, sql } from "../config/database"
 import { UpdateOperation } from "./Users"
 
 export default class Model {
-    protected collection: string = ""
+    protected collection: string = "";
+    protected table_name: string = "";
 
     constructor() { }
 
@@ -77,9 +78,33 @@ export default class Model {
             })
         })
     }
-
+    
     protected addMany() {
 
+    }
+
+    /**
+     * 
+     * @param attr example => ['id','name','email']
+     * @param where example => WHERE email = $1
+     * @param params example => ['johndoe@mail.com']
+     */
+    protected async selectOne(attr:Array<string>, where: string, params:Array<any>){
+        const query = `SELECT ${attr} FROM ${this.table_name} ${where} LIMIT 1`
+        const fetch:any = await  sql(query, params);
+        if(fetch.length === 0) return {}
+        return fetch[0];
+    }
+    /**
+     * @description SQL Update
+     * @param set example => 'SET column1 = $1, column2 = $2'
+     * @param where example => 'WHERE column3 = $3'
+     * @param params example => ['param1', 'param2', 'param3']
+     */
+    protected async update(set:string, where:string, params:Array<any>){
+        if(this.table_name === "" || this.table_name === undefined) throw "Table name requires"
+        const QUERY = `UPDATE ${this.table_name} ${set} ${where} `
+        return sql(QUERY, params);
     }
 
 }
