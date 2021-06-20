@@ -31,3 +31,14 @@ export const emailValidator = (email:string) => {
     if(email.match(EMAIL_REG) === null) return false
     return true
 }
+
+export const passwordMinValidator = (password: string) => {
+    if(password.length < 6) return false 
+    return true
+}
+
+export const passwordValidator = (password: string) => {
+    const PASS_REG = /[a-zA-Z]\w*(?:([\.~!@#$%^&*\(\_\/?)][0-9]\w*)|(?:[0-9][\.~!@#$%^&*\(\)_\/?]\w*))/
+    if(password.match(PASS_REG) === null) return false 
+    return true
+}
