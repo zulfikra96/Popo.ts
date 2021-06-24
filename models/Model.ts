@@ -89,8 +89,8 @@ export default class Model {
      * @param where example => WHERE email = $1
      * @param params example => ['johndoe@mail.com']
      */
-    protected async selectOne(attr:Array<string>, where: string, params:Array<any>){
-        const query = `SELECT ${attr} FROM ${this.table_name} ${where} LIMIT 1`
+    protected async selectOne(columns:Array<string>, where: string, params:Array<any>){
+        const query = `SELECT ${columns} FROM ${this.table_name} ${where} LIMIT 1`
         const fetch:any = await  sql(query, params);
         if(fetch.length === 0) return {}
         return fetch[0];

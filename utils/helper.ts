@@ -42,3 +42,4 @@ export const passwordValidator = (password: string) => {
     if(password.match(PASS_REG) === null) return false 
     return true
 }
+
