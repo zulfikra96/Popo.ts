@@ -5,16 +5,21 @@ const REDIS_CLIENT = redis.createClient({
     host:<string>process.env.REDIS_HOST,
     port:parseInt(<string>process.env.REDIS_PORT)
 })
+
+REDIS_CLIENT.on("error",(error) => {
+    console.log(error)
+})
+
 const USERNAME  = process.env.dbusername || "si"
 const PASSWORD  = process.env.dbpass || "pass123"
 
 const URL       = `mongodb://${USERNAME}:${PASSWORD}@mongodb:27017`;
 const postgres = new Pool({
-    user:process.env.PG_USERNAME,
-    password:process.env.PG_PASSWORD,
-    host:process.env.PG_HOST,
-    database:process.env.PG_DATABASE,
-    port:parseInt(<string>process.env.PG_PORT),
+    user:process.env.POSTGRES_USER,
+    password:process.env.POSTGRES_PASSWORD,
+    host:process.env.POSTGRES_HOST,
+    database:process.env.POSTGRES_DB,
+    port:parseInt(<string>process.env.POSTGRES_PORT),
 
 })
 postgres.on("error",(err, client) => {
