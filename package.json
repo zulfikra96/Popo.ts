@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.ts",
-    "start": "pm2 start index.ts --watch=true"
+    "start": "pm2 start index.ts --watch=true",
+    "create-table":"ts-node ./database/index.ts BUILD",
+    "drop-table":"ts-node ./database/index.ts DROP"
   },
   "author": "",
   "license": "ISC",
