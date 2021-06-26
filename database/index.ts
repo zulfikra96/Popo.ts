@@ -11,7 +11,9 @@ const dropTable = async () => {
     sql(DROP.toString(),[]);
 }
 
-const ARGUMENT = process.argv[process.argv.length - 1]
+const ARGUMENT = process.argv[process.argv.length - 1];
+
+
 switch (ARGUMENT) {
     case "BUILD":
         buildTable()

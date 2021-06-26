@@ -41,6 +41,7 @@ export const authV2 = (req:Request, res:Response, next:NextFunction, roles:Array
             status_code:401
         }) 
     }
+    req.body.SESSION = data;
     if(roles[0] === "*") return next();
         roles = roles.filter((i) => i === data.userable_type);
     if(roles.length === 0) return res.status(401).json(response_json = {
