@@ -10,8 +10,8 @@ REDIS_CLIENT.on("error",(error) => {
     console.log(error)
 })
 
-const USERNAME  = process.env.dbusername || "si"
-const PASSWORD  = process.env.dbpass || "pass123"
+const USERNAME  = process.env.MONGO_INITDB_ROOT_USERNAME || "si"
+const PASSWORD  = process.env.MONGO_INITDB_ROOT_PASSWORD || "pass123"
 
 const URL       = `mongodb://${USERNAME}:${PASSWORD}@mongodb:27017`;
 const postgres = new Pool({
@@ -26,7 +26,7 @@ postgres.on("error",(err, client) => {
     console.error(err);
 })
 
-const database  = process.env.dbname  || "information_system";
+const database  = process.env.MONGO_INITDB_DATABASE  || "information_system";
 
 interface DbCallback {
     (db:Db, client:MongoClient):void
