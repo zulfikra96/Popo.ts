@@ -1,5 +1,5 @@
 import { ObjectID, ObjectId } from "bson"
-import { noSql, sql } from "../config/database"
+import { noSql, sql, sqlWithCache, REDIS_CLIENT } from "../config/database"
 import { UpdateOperation } from "./Users"
 
 export default class Model {
@@ -7,18 +7,39 @@ export default class Model {
     protected table_name: string = "";
 
     constructor() { }
-
-    protected async findOne(args: Object) {
+    /**
+     * @description this function to get data from mongodb
+     * @param args 
+     * @returns 
+     */
+    protected async findOne(args: Object, fields: object, cache?:boolean, cache_duration: number = 5) {
         return new Promise((resolve, reject) => {
             noSql((db, client) => {
                 const collection = db.collection(this.collection)
-                collection.findOne(args, (err, result) => {
-                    if (err) return reject(err)
+                collection.findOne(args, {projection:fields}, (err, result) => {
+                    if(err){
+                        console.error(err)
+                        return reject(err)
+                    }
+                    if(cache){
+                        return REDIS_CLIENT.get(JSON.stringify(args),(err,_result) => {
+                            if(err){
+                                 console.error(err);
+                                return reject(err)
+                            }
+                            client.close()
+                            if(_result === null){
+                                REDIS_CLIENT.setex(JSON.stringify(args), cache_duration,JSON.stringify(result));
+                                return resolve(result);
+                            }
+                            return resolve(JSON.parse(_result));
+                        })
+                    }
+                    
                     client.close()
-                    resolve(result);
+                    return resolve(result);
                 })
             })
-
         })
     }
 
@@ -89,9 +110,14 @@ export default class Model {
      * @param where example => WHERE email = $1
      * @param params example => ['johndoe@mail.com']
      */
-    protected async selectOne(columns:Array<string>, where: string, params:Array<any>){
+    protected async selectOne(columns:Array<string>, where: string, params:Array<any>, cache?:boolean){
         const query = `SELECT ${columns} FROM ${this.table_name} ${where} LIMIT 1`
-        const fetch:any = await  sql(query, params);
+        let fetch:any;
+        if(cache){
+            fetch = await  sqlWithCache(query, params,true);
+        }else{
+            fetch = await sql(query, params);
+        }
         if(fetch.length === 0) return {}
         return fetch[0];
     }
@@ -105,6 +131,39 @@ export default class Model {
         if(this.table_name === "" || this.table_name === undefined) throw "Table name requires"
         const QUERY = `UPDATE ${this.table_name} ${set} ${where} `
         return sql(QUERY, params);
+    }
+
+    protected async insert(columns:Array<any> = [], params:Array<any> = [], returning?:Array<any>){
+        let values: Array<any> = [];
+        let sequence: number   = 1;
+        if(columns.length === 0){
+            return sql(`INSERT INTO ${this.table_name} (created_at, updated_at) VALUES(NOW(), NOW()) ${(returning !== undefined) ? `RETURNING ${returning} ` : ''}`, params);
+        }
+        columns.forEach((e) => {
+            values.push(`$${sequence}`)
+            sequence++;            
+        })
+        const QUERY = `INSERT INTO ${this.table_name} (${columns}) VALUES(${values}) ${(returning !== undefined) ? `RETURNING ${returning}` : ''}`;
+        return sql(QUERY, params);
+    }
+
+    protected selectAll(
+        columns: Array<string>, 
+        where: string = "", 
+        params: Array<any> = [], 
+        limit: number  = 10, 
+        offset: number = 0, 
+        cache: boolean = false, 
+        cache_time:number = 10){
+        let query: string;
+        if(limit !== 0)
+            query = `SELECT ${columns} FROM ${this.table_name} ${where}  LIMIT ${limit} OFFSET ${offset}`;
+        else 
+            query = `SELECT ${columns} FROM ${this.table_name} ${where}`    
+        if(cache){
+            return sqlWithCache(query, params, true, false, cache_time);
+        }
+        return sql(query, params);
     }
 
 }

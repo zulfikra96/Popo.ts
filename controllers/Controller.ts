@@ -7,8 +7,8 @@ export default class Controller {
     constructor(public req:Request, public res:Response){
         this.req = req;
         this.res = res;
-        this.body = this.req.body
-        this.query = this.req.query
+        this.body = this.req?.body
+        this.query = this.req?.query
     }
 
     public post() {}

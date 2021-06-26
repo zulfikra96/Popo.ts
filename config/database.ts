@@ -1,7 +1,7 @@
 import  {  Db, MongoClient } from "mongodb";
 import { Pool } from "pg"
 import redis from "redis";
-const REDIS_CLIENT = redis.createClient({
+export const REDIS_CLIENT = redis.createClient({
     host:<string>process.env.REDIS_HOST,
     port:parseInt(<string>process.env.REDIS_PORT)
 })
