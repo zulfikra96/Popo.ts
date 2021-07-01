@@ -1,7 +1,7 @@
 import { ObjectID, ObjectId } from "bson"
 import { noSql, sql, sqlWithCache, REDIS_CLIENT } from "../config/database"
 import { UpdateOperation } from "./Users"
-
+import { isEmpty } from "../utils/helper"
 export default class Model {
     protected collection: string = "";
     protected table_name: string = "";
@@ -111,6 +111,7 @@ export default class Model {
      * @param params example => ['johndoe@mail.com']
      */
     protected async selectOne(columns:Array<string>, where: string, params:Array<any>, cache?:boolean){
+        if(isEmpty(this.table_name)) throw "Table name is undefined"
         const query = `SELECT ${columns} FROM ${this.table_name} ${where} LIMIT 1`
         let fetch:any;
         if(cache){
