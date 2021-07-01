@@ -66,7 +66,8 @@ export const sqlWithCache = (query:string, params:Array<any>, cache:boolean = fa
             REDIS_CLIENT.get(query, async (err, result) => {
                 if(err) return reject(err);
                 if(result === null){
-                    const FETCH = await sql(query, params);
+                    const FETCH = await sql(query, params)
+                        .catch(reject);
                     if(cache_duration === 0 || cache_duration === null){
                         REDIS_CLIENT.set(query, JSON.stringify(FETCH),(err,result) => {
                             if(err) return reject(err);
@@ -75,11 +76,15 @@ export const sqlWithCache = (query:string, params:Array<any>, cache:boolean = fa
                     }else{
                         REDIS_CLIENT.setex(query, cache_duration, JSON.stringify(FETCH),(err) => {
                             if(err) return reject(err);
+                            if(typeof FETCH === "object") return resolve(FETCH);
                             return resolve(JSON.parse(<string>FETCH))
                         })
                     }
                 }
-                return resolve(JSON.parse(<string>result));
+                if(typeof result === "string"){
+                    return resolve(JSON.parse(<string>result));
+                }
+                return result
             })
             
         })
