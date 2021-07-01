@@ -11,6 +11,11 @@ const dropTable = async () => {
     sql(DROP.toString(),[]);
 }
 
+const alterTable = async () => {
+    const ALTER = fs.readFileSync(__dirname + '/alter_table.pgsql')
+    sql(ALTER.toString(),[]);
+}
+
 const ARGUMENT = process.argv[process.argv.length - 1];
 
 
@@ -24,6 +29,12 @@ switch (ARGUMENT) {
         dropTable()
             .then(() => console.log("Success drop table"))
             .catch((err) => console.error(err))
+        break;
+    case "ALTER":
+        alterTable()
+            .then(() => console.log("Success alter table"))
+            .catch((err) => console.error(err));
+        break;
     default:
         break;
 }
