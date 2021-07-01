@@ -17,8 +17,7 @@ This boilerplate still under maintenance and still beta version, soon will be co
 
 1. Install typescript & ts-node globally
 
-.. code-block:: text
+..
 
     $ npm install typescript ts-node -g
-
-.. 
+..
