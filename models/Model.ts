@@ -1,4 +1,4 @@
-import { ObjectID, ObjectId } from "bson"
+import { ObjectID } from "bson"
 import { noSql, sql, sqlWithCache, REDIS_CLIENT } from "../config/database"
 import { UpdateOperation } from "./Users"
 import { isEmpty } from "../utils/helper"
@@ -22,14 +22,14 @@ export default class Model {
                         return reject(err)
                     }
                     if(cache){
-                        return REDIS_CLIENT.get(JSON.stringify(args),(err,_result) => {
+                        return REDIS_CLIENT.get(JSON.stringify({...args, collection:this.collection}),(err: any,_result: string | null) => {
                             if(err){
                                  console.error(err);
                                 return reject(err)
                             }
                             client.close()
                             if(_result === null){
-                                REDIS_CLIENT.setex(JSON.stringify(args), cache_duration,JSON.stringify(result));
+                                REDIS_CLIENT.setex(JSON.stringify({...args, collection:this.collection}), cache_duration,JSON.stringify(result));
                                 return resolve(result);
                             }
                             return resolve(JSON.parse(_result));
@@ -40,6 +40,7 @@ export default class Model {
                     return resolve(result);
                 })
             })
+
         })
     }
 
