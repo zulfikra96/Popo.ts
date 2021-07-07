@@ -144,14 +144,22 @@ export default class Model {
         let values: Array<any> = [];
         let sequence: number   = 1;
         if(columns.length === 0){
-            return sql(`INSERT INTO ${this.table_name} (created_at, updated_at) VALUES(NOW(), NOW()) ${(returning !== undefined) ? `RETURNING ${returning} ` : ''}`, params);
+            return sql(`INSERT INTO ${this.table_name} (created_at, updated_at) VALUES(NOW(), NOW()) ${(returning !== undefined) ? `RETURNING ${returning} ` : ''}`, params)
+                .catch((err) => {
+                    console.error(`INSERT INTO ${this.table_name} (created_at, updated_at) VALUES(NOW(), NOW()) ${(returning !== undefined) ? `RETURNING ${returning} ` : ''}`);
+                    throw err
+                });
         }
         columns.forEach((e) => {
             values.push(`$${sequence}`)
             sequence++;            
         })
         const QUERY = `INSERT INTO ${this.table_name} (${columns}) VALUES(${values}) ${(returning !== undefined) ? `RETURNING ${returning}` : ''}`;
-        return sql(QUERY, params);
+        return sql(QUERY, params)
+            .catch((err) => {
+                console.error(`INSERT INTO ${this.table_name} (${columns}) VALUES(${values}) ${(returning !== undefined) ? `RETURNING ${returning}` : ''}`);
+                throw err
+            });
     }
 
     protected selectAll(
