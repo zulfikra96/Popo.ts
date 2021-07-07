@@ -13,6 +13,7 @@ export default class Model {
      * @returns 
      */
     protected async findOne(args: Object, fields: object, cache?:boolean, cache_duration: number = 5) {
+        if(this.collection.length === 0) throw new Error("Collection can not be empty");
         return new Promise((resolve, reject) => {
             noSql((db, client) => {
                 const collection = db.collection(this.collection)
@@ -44,6 +45,8 @@ export default class Model {
     }
 
     protected async findAll(args: Object = {}) {
+        if(this.collection.length === 0) throw new Error("Collection can not be empty");
+
         return new Promise((resolve, reject) => {
             noSql((db, client) => {
                 const collection = db.collection(this.collection)
@@ -57,6 +60,7 @@ export default class Model {
     }
 
     protected updateOne(query:object, operation:UpdateOperation) {
+        if(this.collection.length === 0) throw new Error("Collection can not be empty");
         return new Promise((resolve, reject) => {
             noSql(async (db, client) => {
                 const collection = await db.collection(this.collection);
@@ -69,7 +73,7 @@ export default class Model {
     }
 
     protected deleteOne(filter: any) {
-
+        if(this.table_name.length === 0) throw new Error("Table name can not be empty");
         return new Promise((resolve, reject) => {
             noSql(async (db, client) => {
                 const filter_attr = Object.keys(filter)
@@ -90,6 +94,7 @@ export default class Model {
     }
 
     protected insertOne(value: object) {
+        if(this.collection.length === 0) throw new Error("Collection can not be empty");
         return new Promise((resolve, reject) => {
             noSql(async (db, client) => {
                 const collection = await db.collection(this.collection);
@@ -111,7 +116,7 @@ export default class Model {
      * @param params example => ['johndoe@mail.com']
      */
     protected async selectOne(columns:Array<string>, where: string, params:Array<any>, cache?:boolean){
-        if(isEmpty(this.table_name)) throw "Table name is undefined"
+        if(isEmpty(this.table_name)) throw new Error("Table name can not be empty")
         const query = `SELECT ${columns} FROM ${this.table_name} ${where} LIMIT 1`
         let fetch:any;
         if(cache){
@@ -129,12 +134,13 @@ export default class Model {
      * @param params example => ['param1', 'param2', 'param3']
      */
     protected async update(set:string, where:string, params:Array<any>){
-        if(this.table_name === "" || this.table_name === undefined) throw "Table name requires"
+        if(this.table_name === "" || this.table_name === undefined) throw new Error("Table name requires");
         const QUERY = `UPDATE ${this.table_name} ${set} ${where} `
         return sql(QUERY, params);
     }
 
     protected async insert(columns:Array<any> = [], params:Array<any> = [], returning?:Array<any>){
+        if(this.table_name.length === 0) throw new Error("Table name can not be empty");
         let values: Array<any> = [];
         let sequence: number   = 1;
         if(columns.length === 0){
@@ -156,6 +162,8 @@ export default class Model {
         offset: number = 0, 
         cache: boolean = false, 
         cache_time:number = 10){
+        if(this.table_name.length === 0) throw new Error("Table name can not be empty");
+
         let query: string;
         if(limit !== 0)
             query = `SELECT ${columns} FROM ${this.table_name} ${where}  LIMIT ${limit} OFFSET ${offset}`;
