@@ -13,7 +13,6 @@ RUN npm install @types/express
 
 RUN npm install nodemon -g
 
-RUN npm install  pm2 -g
 
 COPY . .
 

@@ -1,17 +1,16 @@
 import express from "express";
 import * as dotenv from "dotenv"
-import route from "./routes/api"
-import user_resource from "./routes/resources/users"
+import route from "./routes"
+import Bootstrap from "./config/bootstrap";
+import Loaders from "./config/loaders"
 
 dotenv.config();
 const app = express();
+const bootstrap = new Bootstrap(app);
 
-app.use(express.json({limit:800}))
-app.use(express.urlencoded({extended:true}))
+bootstrap.loadUseModule(Loaders());
+bootstrap.loadRouteModule(route());
 
-app.use("/", route);
-app.use("/users",user_resource);
+const PORT: any = process.env.PORT || 4000; 
 
-const PORT: any = process.env.port || 4000;
-
-app.listen(PORT, () => console.log("app run on ", PORT));
+bootstrap.listen(PORT);
