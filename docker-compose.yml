@@ -1,0 +1,15 @@
+version: "3.9"
+services: 
+    popo:
+        build: .
+        ports: 
+            - "4000:4000"
+        env_file:
+            - ".env"
+        command: pnpm run dev
+        volumes: 
+            - "./node_modules/:/home/popo/node_modules"
+            - ".:/home/popo"
+volumes: 
+    controllers: {}
+    

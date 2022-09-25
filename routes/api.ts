@@ -6,4 +6,8 @@ import Login from "../controllers/Login"
 
 route.get("/login",(req,res) => new Login(req,res).main)
 
+route.get("/", 
+    (req, res) => res.render("home/index.html")
+)
+
 export default route
