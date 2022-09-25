@@ -30,7 +30,7 @@ export const isEmpty = (value:any) => {
 }
 
 export const emailValidator = (email:string) => {
-    const EMAIL_REG = /^([a-zA-Z0-9@#$%^&*\.\,\(\)\-]+)@([a-z]\w*)([\.]\w+)+/;
+    const EMAIL_REG =  /^([a-zA-Z0-9@#$%^&*\.\,\(\)\-\_]+)@([a-z]\w*)([\.]\w+)+/
     if(email.match(EMAIL_REG) === null) return false
     return true
 }
