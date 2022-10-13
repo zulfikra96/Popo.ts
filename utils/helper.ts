@@ -1,12 +1,14 @@
 import Cryptr from "cryptr";
 import { sql } from "../config/database"
 import { Request, Response } from "express"
+import { utcToZonedTime } from "date-fns-tz";
+import { format, differenceInHours } from 'date-fns';
 const private_key: string = <string>process.env.PRIVATE_KEY ;
 export const crypter = new Cryptr(private_key);
 export interface ResponseJson  {
     status_code:404 | 400 | 422 | 200 | 401,
     status:"fail" | "error" | "success" ,
-    message:string,
+    message?:string | any,
     data:any,
     total_data?:number,
     page_active?:number
@@ -177,7 +179,7 @@ export const salaryCounter = (data = {
     if (isEmpty(data.start_time)) throw "Start time can not be empty";
     if (isEmpty(data.end_time)) throw "End time can not be empty";
     // const date = format(new Date().toLocaleDateString(),"yyyy-MM-dd")
-    const total_day = differenceInDays(data.end_date, data.start_date) + 1;
+    const total_day = differenceInHours(data.end_date, data.start_date) + 1;
     // total_day+=1
     const start_time = new Date(new Date().toLocaleDateString() + " " + `${data.start_time}`);
     const end_time = new Date(new Date().toLocaleDateString() + " " + `${data.end_time}`);
